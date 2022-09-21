@@ -1,56 +1,73 @@
 package com.onlineshopmart.user;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.sql.SQLException;
 import java.util.Scanner;
-import java.util.Set;
 
-public class Login implements UserInterface {
-		public static String username =null;
-		public static String password =null;
-		
-		public void getLogIn() {
-			PreparedStatement preparedStatement =null;
-			ResultSet resultSet =null;
-			
-		Map <String ,String> map = new LinkedHashMap<String,String>();
-		Scanner scan = new Scanner(System.in);
+public class Login implements LoginInterface {
+	public static String username = null;
+	public static String password = null;
+
+	@Override
+	public void getLogIn(Connection con, Scanner sc, String username, String password)
+
+	{
 		try {
-			preparedStatement=ConnectJDBC.connection.prepareStatement("select * from user");
-			resultSet =preparedStatement.executeQuery();
-			while(resultSet.next()){
-				map.put(resultSet.getString(6), resultSet.getString(7));
-				
-			System.out.println("Enter username and password which you have entered during registration time 😊 😊 😊");	
-			System.out.println();
-			System.out.println("Enter the Username : ");
-			username=scan.next();
-			System.out.println("Enter the Password : ");
-			password =scan.next();
-			System.out.println("------------------------------------------------------------------------------------------------");
-			
-			Set <String > set = map.keySet();
-			if(set.contains(username)) {
-				if(password.equals(map.get(username))) {
-			System.out.println("Log In Successfully 😀 😀 😀    /n "
-					+ "😊  WELCOME 😊");
-			System.out.println("-------------------------------------------------------------------------------------------------");
-			
-				}else {
-					System.out.println("Sorry 😢 😢 , Invalid password entered, Pleased try again 🙏🙏");
-					System.out.println("-----------------------------------------------------------------------------------------");
-					getLogIn();
-				}
-			}else {
-				System.out.println("Sorry 😢😢 , You entered Invalid username please check once and try again 🙏🙏");
-				System.out.println("----------------------------------------------------------------------------------------------");
-				getLogIn();
+			String query = "SELECT username,password FROM user WHERE username=? AND password=?";
+			PreparedStatement ps = con.prepareStatement(query);
+			ps.setString(1, username);
+			ps.setString(2, password);
+			ResultSet res = ps.executeQuery();
+			if (res.next()) {
+				System.out.println("---------------------------------------------------");
+				System.out.println("Log In Successfully ðŸ˜€ ðŸ˜€ ðŸ˜€ ");
+				System.out.println("ðŸ˜Š  WELCOME ðŸ˜Š");
+			} else {
+				System.out.println(
+						"Sorry ðŸ˜¢ðŸ˜¢ , You entered Invalid username OR password please check once and try again ðŸ™�ðŸ™�");
 			}
-			}
-		}catch(Exception e) {
+
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public int getUserId(Connection con, Scanner sc) throws SQLException {
+		PreparedStatement preparedStatement2 = con.prepareStatement("select userid from user where username=?");
+
+		preparedStatement2.setString(1, username);
+		ResultSet resultSet2 = preparedStatement2.executeQuery();
+		if (resultSet2.next()) {
+			return resultSet2.getInt("userid");
+		} else {
+			return 0;
 		}
+	}
+
+	@Override
+	public ResultSet getUserInfo(Connection con, Scanner sc) throws SQLException {
+
+		PreparedStatement preparedStatement2 = con
+				.prepareStatement("select userid,firstname,lastname,mobilenumber,address from user where username=?");
+
+		preparedStatement2.setString(1, username);
+		ResultSet resultSet2 = preparedStatement2.executeQuery();
+
+		while (resultSet2.next()) {
+
+			System.out.println("----------------------------------------");
+			System.out.println("   ***Customer Info*** ");
+			System.out.println("----------------------------------------");
+
+			System.out.println("Customer ID:      " + resultSet2.getInt(1));
+			System.out.println("Customer Name:    " + resultSet2.getString(2));
+			System.out.println("Customer Address:    " + resultSet2.getString(5));
+			System.out.println("Customer Mobile:    " + resultSet2.getString(2));
+		}
+
+		return resultSet2;
+	}
 }
