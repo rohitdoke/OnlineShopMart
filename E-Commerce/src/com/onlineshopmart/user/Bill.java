@@ -104,9 +104,9 @@ public Integer getOrderId(int len) {
 		
 		String s = "";
 		int ranNo;
-		// Use for loop to iterate 4 times and generate random OTP
+		
 		for (int i = 0; i < len; i++) {
-			// Generate random digit within 0-9
+			
 			ranNo = new Random().nextInt(9);
 			s = s.concat(Integer.toString(ranNo));
 		}
