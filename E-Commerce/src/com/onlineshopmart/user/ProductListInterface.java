@@ -7,5 +7,5 @@ import java.util.Scanner;
 public interface ProductListInterface {
 	public void getProductList(Connection con, Scanner sc) throws SQLException;
 
-	public void addCart(Connection con, Scanner sc) throws SQLException;
+	
 }
